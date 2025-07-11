@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moving Rectangle</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background-color: white;
+            border: 2px solid #333;
+            margin: 20px auto;
+        }
+        
+        .rectangle {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background-color: #4CAF50;
+            border: 2px solid #45a049;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .rectangle-title {
+            margin: 2px 0;
+            font-size: 10px;
+        }
+        
+        .rectangle-link {
+            color: #FFE4B5;
+            text-decoration: none;
+            font-size: 9px;
+            margin-top: 2px;
+        }
+        
+        .rectangle-link:hover {
+            color: #FFFF99;
+            text-decoration: underline;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: #007B9A;
+        }
+        
+        .info {
+            text-align: center;
+            margin: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Moving Rectangle Examples</h1>
+    
+    <div class="container" id="container">
+        <div class="rectangle" id="rectangle">
+            <a href="https://example.com" class="rectangle-link" target="_blank">🔗 Link</a>
+            <div class="rectangle-title">Task Box</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <h3>Method 1: Arrow Key Controls</h3>
+        <p>Use arrow keys to move the rectangle</p>
+        
+        <h3>Method 2: Button Controls</h3>
+        <button onclick="moveUp()">↑ Up</button>
+        <button onclick="moveDown()">↓ Down</button>
+        <button onclick="moveLeft()">← Left</button>
+        <button onclick="moveRight()">→ Right</button>
+        <br>
+        
+        <h3>Method 3: Animation</h3>
+        <button onclick="startAnimation()">Start Animation</button>
+        <button onclick="stopAnimation()">Stop Animation</button>
+        <button onclick="resetPosition()">Reset Position</button>
+        
+        <h3>Method 4: Click to Move</h3>
+        <p>Click anywhere in the white area to move rectangle there</p>
+    </div>
+    
+    <div class="info">
+        <p>Position: <span id="position">X: 0, Y: 0</span></p>
+    </div>
+
+    <script>
+        const rectangle = document.getElementById('rectangle');
+        const container = document.getElementById('container');
+        const positionDisplay = document.getElementById('position');
+        
+        let currentX = 0;
+        let currentY = 0;
+        let animationId;
+        let isAnimating = false;
+        
+        // Update position display
+        function updatePosition() {
+            positionDisplay.textContent = `X: ${currentX}, Y: ${currentY}`;
+        }
+        
+        // Move rectangle to specific position
+        function moveRectangle(x, y) {
+            // Keep rectangle within container bounds
+            const maxX = container.clientWidth - rectangle.offsetWidth;
+            const maxY = container.clientHeight - rectangle.offsetHeight;
+            
+            currentX = Math.max(0, Math.min(x, maxX));
+            currentY = Math.max(0, Math.min(y, maxY));
+            
+            rectangle.style.left = currentX + 'px';
+            rectangle.style.top = currentY + 'px';
+            updatePosition();
+        }
+        
+        // Method 1: Arrow key controls
+        document.addEventListener('keydown', function(event) {
+            const step = 10; // pixels to move
+            
+            switch(event.key) {
+                case 'ArrowUp':
+                    event.preventDefault();
+                    moveRectangle(currentX, currentY - step);
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    moveRectangle(currentX, currentY + step);
+                    break;
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    moveRectangle(currentX - step, currentY);
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    moveRectangle(currentX + step, currentY);
+                    break;
+            }
+        });
+        
+        // Method 2: Button controls
+        function moveUp() {
+            moveRectangle(currentX, currentY - 20);
+        }
+        
+        function moveDown() {
+            moveRectangle(currentX, currentY + 20);
+        }
+        
+        function moveLeft() {
+            moveRectangle(currentX - 20, currentY);
+        }
+        
+        function moveRight() {
+            moveRectangle(currentX + 20, currentY);
+        }
+        
+        // Method 3: Animation
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            let angle = 0;
+            const centerX = (container.clientWidth - rectangle.offsetWidth) / 2;
+            const centerY = (container.clientHeight - rectangle.offsetHeight) / 2;
+            const radius = 100;
+            
+            function animate() {
+                if (!isAnimating) return;
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                moveRectangle(x, y);
+                angle += 0.05;
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        function stopAnimation() {
+            isAnimating = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        function resetPosition() {
+            stopAnimation();
+            moveRectangle(0, 0);
+        }
+        
+        // Method 4: Click to move
+        container.addEventListener('click', function(event) {
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left - rectangle.offsetWidth / 2;
+            const y = event.clientY - rect.top - rectangle.offsetHeight / 2;
+            
+            moveRectangle(x, y);
+        });
+        
+        // Initialize
+        moveRectangle(0, 0);
+        
+        // Make rectangle draggable (bonus feature)
+        let isDragging = false;
+        let startX, startY;
+        
+        rectangle.addEventListener('mousedown', function(event) {
+            isDragging = true;
+            startX = event.clientX - currentX;
+            startY = event.clientY - currentY;
+            event.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(event) {
+            if (!isDragging) return;
+            
+            const x = event.clientX - startX;
+            const y = event.clientY - startY;
+            moveRectangle(x, y);
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>
