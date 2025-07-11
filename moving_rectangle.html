@@ -89,10 +89,56 @@
     <h1 style="text-align: center;">Moving Rectangle Examples</h1>
     
     <div class="container" id="container">
-        <div class="rectangle" id="rectangle">
-            <a href="https://example.com" class="rectangle-link" target="_blank">🔗 Link</a>
+        <div class="rectangle" id="rectangle" style="background-color: #4CAF50;">
+            <a href="https://www.shvtech.com" class="rectangle-link" target="_blank">🔗 Rules</a>
+            <a href="https://www.microsoft.com" class="rectangle-link" target="_blank">🔗 Input</a>
+            <a href="https://www.github.com" class="rectangle-link" target="_blank">🔗 Output</a>
+            <a href="https://www.google.com" class="rectangle-link" target="_blank">🔗 Resource</a>
             <div class="rectangle-title">Task Box</div>
         </div>
+        <div class="rectangle" id="rectangle2" style="left: 200px; top: 150px; background-color: #2196F3; border-color: #1976D2;">
+            <a href="https://www.shvtech.com" class="rectangle-link" target="_blank">🔗 Rules</a>
+            <a href="https://www.microsoft.com" class="rectangle-link" target="_blank">🔗 Input</a>
+            <a href="https://www.github.com" class="rectangle-link" target="_blank">🔗 Output</a>
+            <a href="https://www.google.com" class="rectangle-link" target="_blank">🔗 Resource</a>
+            <div class="rectangle-title">Task Box 2</div>
+        </div>
+        <svg id="connector" width="800" height="600" style="position:absolute; left:0; top:0; pointer-events:none;">
+            <line id="rectLine" x1="0" y1="0" x2="0" y2="0" stroke="#888" stroke-width="2"/>
+        </svg>
+        <script>
+            function updateLine() {
+                const rect1 = document.getElementById('rectangle');
+                const rect2 = document.getElementById('rectangle2');
+                const line = document.getElementById('rectLine');
+
+                const r1 = rect1.getBoundingClientRect();
+                const r2 = rect2.getBoundingClientRect();
+                const c = container.getBoundingClientRect();
+
+                // Center points relative to container
+                const x1 = r1.left - c.left + r1.width / 2;
+                const y1 = r1.top - c.top + r1.height / 2;
+                const x2 = r2.left - c.left + r2.width / 2;
+                const y2 = r2.top - c.top + r2.height / 2;
+
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+            }
+
+            // Update line whenever rectangles move
+            const observer = new MutationObserver(updateLine);
+            observer.observe(document.getElementById('rectangle'), { attributes: true, attributeFilter: ['style'] });
+            observer.observe(document.getElementById('rectangle2'), { attributes: true, attributeFilter: ['style'] });
+
+            window.addEventListener('resize', updateLine);
+            document.addEventListener('DOMContentLoaded', updateLine);
+
+            // Also update after any movement
+            setInterval(updateLine, 30);
+        </script>
     </div>
     
     <div class="controls">
